@@ -1,0 +1,13 @@
+pip install --no-cache-dir transformers==4.43.3
+pip install --no-cache-dir accelerate
+pip install --no-cache-dir bitsandbytes
+pip install --no-cache-dir unsloth
+
+pip install --no-cache-dir librosa 
+pip install --no-cache-dir av 
+pip install --no-cache-dir trl 
+pip install --no-cache-dir datasets 
+
+pip install --no-cache-dir tqdm 
+pip install --no-cache-dir pandas
+pip install --no-cache-dir numpy
