@@ -5,9 +5,10 @@ WORKDIR /app
 # HF Spaces runs as a non-root user — pre-create cache dir with open perms
 RUN mkdir -p /app/model_cache && chmod 777 /app/model_cache
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     cmake \
+    libopenblas-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir \
@@ -18,8 +19,9 @@ RUN pip install --no-cache-dir \
     huggingface-hub>=0.19.4 \
     python-dotenv>=1.0.0
 
-# Build from source — latest version for Gemma 4 architecture support
-RUN CMAKE_ARGS="-DGGML_NATIVE=OFF" pip install --no-cache-dir llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+# Install the llama-cpp-python server WITH CPU optimizations
+RUN CMAKE_ARGS="-DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=OpenBLAS" \
+    pip install --no-cache-dir 'llama-cpp-python==0.2.90'
 
 COPY . .
 

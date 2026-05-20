@@ -15,11 +15,10 @@ if not _HF_TOKEN:
 
 # ── Generation config (ported from the torch/transformers script) ─────────────
 GEN_CONFIG = {
-    "max_tokens":     512,
-    "temperature":    0.65,
-    "top_p":          0.9,
-    "repeat_penalty": 1.05,   # maps to repetition_penalty in transformers
-    # no_repeat_ngram_size=3 has no direct llama-cpp equivalent — omitted
+    "max_tokens": 512,
+    "temperature": 0.65,
+    "top_p": 0.9,
+    "repeat_penalty": 1.05, # Equates to repetition_penalty
 }
 
 MAX_HISTORY_MESSAGES = 20   # trim after 20 turns (matches script's [-20:])
@@ -74,8 +73,10 @@ class LlamaService:
 
         self.llm = Llama(
             model_path=self.model_path,
-            n_ctx=4096,
-            n_threads=os.cpu_count() or 4,
+            n_ctx=2048,
+            n_threads=2,
+            n_batch=512,
+            use_mlock=True,
             verbose=False,
         )
         print("Model loaded successfully!")
