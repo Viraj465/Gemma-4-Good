@@ -1,2 +1,7 @@
 venv
 .env
+*.zip
+__pycache__/
+glm5.md
+LLM.ipynb
+session.md

@@ -61,7 +61,9 @@ export default function ChatScreen() {
         }));
 
         let isFirstChunk = true;
+        let receivedAnyChunk = false;
         await chatWithAIStream(history, (chunk) => {
+          receivedAnyChunk = true;
           if (isFirstChunk) {
             setTyping(false);
             setStatusMsg(null);
@@ -73,6 +75,13 @@ export default function ChatScreen() {
             updateMessage(aiMessageId, currentMessage.text + chunk);
           }
         });
+
+        if (!receivedAnyChunk) {
+          addMessage({
+            ...aiMessage,
+            text: "I connected, but did not receive a response from the model. Please try again.",
+          });
+        }
 
         // Success — break out of retry loop
         break;

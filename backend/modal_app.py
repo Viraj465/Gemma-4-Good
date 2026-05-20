@@ -30,14 +30,20 @@ image = (
         # Pre-built CPU wheel — no compiler needed
         extra_options="--extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu",
     )
-    .pip_install("llama-cpp-python==0.2.90")
+    .pip_install(
+        "llama-cpp-python==0.3.22",
+        extra_options=(
+            "--only-binary=llama-cpp-python "
+            "--extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu"
+        ),
+    )
 )
 
 app = modal.App("mindfulai-backend", image=image)
 
 # ── Generation config (same as local inference.py) ────────────────────────────
 GEN_CONFIG = {
-    "max_tokens":     512,
+    "max_tokens":     128,
     "temperature":    0.65,
     "top_p":          0.9,
     "repeat_penalty": 1.05,

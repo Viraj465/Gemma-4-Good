@@ -28,10 +28,9 @@ export const chatWithAIStream = async (
     let lastIndex = 0;     // how far we've consumed in responseText
     let sseBuffer = "";    // carries an incomplete SSE event to the next onprogress
 
-    xhr.onprogress = () => {
-      // Prepend any leftover data from the previous onprogress call
-      const newData = sseBuffer + xhr.responseText.substring(lastIndex);
-      lastIndex = xhr.responseText.length;
+    const processSseText = (text: string) => {
+      // Normalize SSE line endings; sse-starlette can send CRLF on the wire.
+      const newData = (sseBuffer + text).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 
       // Split by the SSE event delimiter "\n\n"
       const events = newData.split("\n\n");
@@ -81,7 +80,19 @@ export const chatWithAIStream = async (
       }
     };
 
+    xhr.onprogress = () => {
+      const text = xhr.responseText.substring(lastIndex);
+      lastIndex = xhr.responseText.length;
+      processSseText(text);
+    };
+
     xhr.onload = () => {
+      if (lastIndex < xhr.responseText.length) {
+        processSseText(xhr.responseText.substring(lastIndex));
+      } else if (sseBuffer.trim()) {
+        processSseText("\n\n");
+      }
+
       if (xhr.status >= 200 && xhr.status < 300) {
         resolve();
       } else {
